@@ -27,7 +27,7 @@ async function start() {
     if (res) {
       ctx.redirect(res.link)
     } else {
-      ctx.redirect('/404')
+      ctx.redirect('r.xudashuai.xyz')
     }
   })
 
