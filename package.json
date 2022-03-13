@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "concurrently \"vite\" \"nodemon ./server/index.js\"",
-    "serve": "nodemon ./server/index.js",
+    "serve": "node ./server/index.js",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
