@@ -3,7 +3,9 @@ FROM node:16 as builder
 WORKDIR /app
 
 COPY ./package.json ./package.json
-RUN yarn config set registry https://mirrors.huaweicloud.com/repository/npm/
+RUN yarn config set registry http://mirrors.cloud.tencent.com/npm/
+
+
 RUN yarn
 
 COPY ./public ./public
