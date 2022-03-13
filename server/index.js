@@ -20,7 +20,7 @@ async function start() {
     let name = ctx.request.path.substring(1)
 
     const res = await db.findOne({
-      _id: ctx.request.path,
+      _id: name,
     })
     console.log(res, name)
     ctx.status = 302
