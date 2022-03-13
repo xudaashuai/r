@@ -1,40 +1,28 @@
-<script setup>
-import { ref } from 'vue'
-
-defineProps({
-  msg: String
-})
-
-const count = ref(0)
+<script setup lang="ts">
+  defineProps<{ msg: string }>()
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
-  <p>
-    Recommended IDE setup:
-    <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
-    +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-  </p>
-
-  <p>
-    <a href="https://vitejs.dev/guide/features.html" target="_blank">
-      Vite Documentation
+  <h1
+    class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 my-7"
+  >
+    {{ msg }}
+  </h1>
+  <div class="flex flex-row mt-2">
+    <a
+      class="text-indigo-600"
+      href="https://v3.vuejs.org/guide/introduction.html"
+      target="_blank"
+    >
+      Vue 3
     </a>
-    |
-    <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Documentation</a>
-  </p>
-
-  <button type="button" @click="count++">count is: {{ count }}</button>
-  <p>
-    Edit
-    <code>components/HelloWorld.vue</code> to test hot module replacement.
-  </p>
+    <div class="mx-2">|</div>
+    <a
+      class="text-indigo-600"
+      href="https://tailwindcss.com/docs/installation"
+      target="_blank"
+    >
+      Tailwind
+    </a>
+  </div>
 </template>
-
-<style scoped>
-a {
-  color: #42b983;
-}
-</style>
