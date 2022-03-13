@@ -41,21 +41,23 @@
       size="large"
       @click="submit"
     >
-      创建！
+      {{ edit ? '保存' : '创建！' }}
     </n-button>
   </div>
 </template>
 <script setup lang="ts">
 import { URL_PREFIX } from '../constant'
-import { ref, computed } from 'vue'
-import { addNewLink } from '../utils/api'
+import { ref, computed, onMounted } from 'vue'
+import { addNewLink, getLink } from '../utils/api'
 import { NButton, useMessage } from 'naive-ui'
-
+import { useRoute } from 'vue-router'
 const name = ref('')
 const link = ref('')
 const description = ref('')
 const loading = ref(false)
+const route = useRoute()
 
+const edit = !!route.query.edit
 const nameErrorMsg = computed(() => {
   return /^[a-zA-Z0-9\-_]{1,100}$/g.test(name.value)
     ? ''
@@ -76,13 +78,23 @@ async function submit() {
     name: name.value,
     link: link.value,
     description: description.value,
+    edit: !!route.query.edit,
   })
   if (res.data.error) {
     message.error(res.data.error)
   } else {
-    message.success('创建成功')
+    message.success(edit ? '修改成功' : '创建成功')
   }
   loading.value = false
   console.log(res.data)
 }
+onMounted(async () => {
+  if (edit) {
+    const data = (await getLink(route.query.name)).data
+    name.value = data.name
+    link.value = data.link
+    description.value = data.description
+    console.log(data)
+  }
+})
 </script>

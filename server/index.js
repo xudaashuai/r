@@ -4,7 +4,7 @@ const Router = require('koa-router')
 const Logger = require('koa-logger')
 const json = require('koa-json')
 
-const DB_URL = process.env.DB_URL
+const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017'
 
 async function start() {
   var MongoClient = require('mongodb').MongoClient
@@ -49,6 +49,7 @@ async function start2() {
   app.use(new Logger())
   app.use(json())
   let router = new Router()
+  let res
 
   router.post('/addLink', async (ctx) => {
     console.log(ctx.request.body)
@@ -57,16 +58,77 @@ async function start2() {
         _id: ctx.request.body.name,
       })
     ) {
-      ctx.body = {
-        acknowledged: false,
-        error: '已存在',
+      if (ctx.request.body.edit) {
+        res = await db.updateOne(
+          {
+            _id: ctx.request.body.name,
+          },
+          {
+            $set: {
+              ...ctx.request.body,
+            },
+          }
+        )
+      } else {
+        res = {
+          acknowledged: false,
+          error: '已存在',
+        }
+        return
       }
-      return
+    } else {
+      res = await db.insertOne({
+        ...ctx.request.body,
+        _id: ctx.request.body.name,
+      })
     }
-    const res = await db.insertOne({
-      ...ctx.request.body,
-      _id: ctx.request.body.name,
+    ctx.body = res
+  })
+  router.post('/search', async (ctx) => {
+    console.log(ctx.request.body)
+    let cur = db.find(
+      {
+        _id: {
+          $regex: ctx.request.body.keyword,
+        },
+      },
+      {
+        limit: 10,
+      }
+    )
+
+    let res = []
+
+    await cur.forEach((item) => {
+      res.push(item)
     })
+    console.log(res)
+    ctx.body = res
+  })
+
+  router.post('/getLink', async (ctx) => {
+    console.log(ctx.request.body)
+
+    let res = await db.findOne({
+      _id: {
+        $eq: ctx.request.body.name,
+      },
+    })
+
+    console.log(res)
+    ctx.body = res
+  })
+
+  router.post('/deleteLink', async (ctx) => {
+    console.log(ctx.request.body)
+
+    let res = await db.deleteOne({
+      _id: {
+        $eq: ctx.request.body.name,
+      },
+    })
+
+    console.log(res)
     ctx.body = res
   })
 

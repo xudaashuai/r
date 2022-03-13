@@ -1,26 +1,92 @@
-<script setup lang="ts">
-  import HelloWorld from '../components/HelloWorld.vue'
-  import { ref } from 'vue'
-
-  const count = ref(0)
-</script>
-
 <template>
-  <div class="flex min-h-full flex-col items-center justify-center">
-    <img alt="Vue logo" src="../assets/logo.png" class="mt-10" />
-    <button
-      @click="count++"
-      class="rounded-md border py-1 px-3 text-sm font-medium text-black"
-    >
-      Count: {{ count }}
-    </button>
-    <HelloWorld msg="Vite + Vue 3 + Typescript + Tailwind 3 + Vue Rounter 4" />
-    <div class="mt-10 inline-flex rounded-md shadow">
-      <router-link
-        to="/add"
-        class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium leading-6 text-white transition duration-150 ease-in-out hover:bg-indigo-500 focus:outline-none"
-        >Next Page</router-link
-      >
+  <div class="container">
+    <div>
+      <n-h1>Redirector</n-h1>
+      <div>
+        一个简简单单的短链小工具，可以用来当做云书签使用！
+        <n-button type="info" @click="router.push('/add')">
+          点击添加新的短链
+        </n-button>
+      </div>
+    </div>
+    <div class="section">
+      <n-h2>目前已经存在的短链</n-h2>
+      <n-input-group>
+        <n-input v-model:value="keyword" type="text" />
+        <n-button
+          type="primary"
+          ghost
+          :disabled="!keyword || loading"
+          :loading="loading"
+          @click="onSearch"
+        >
+          搜索
+        </n-button>
+      </n-input-group>
+
+      <n-list v-if="data" bordered>
+        <template #header> 搜索到 {{ data.length }} 条结果</template>
+        <n-list-item v-for="item in data" :key="item.name">
+          <template #suffix>
+            <n-space>
+              <n-button @click="router.push(`/add?edit=true&name=${item.name}`)"
+                >编辑</n-button
+              >
+              <n-button type="error" @click="onDelete(item.name)"
+                >删除</n-button
+              >
+            </n-space>
+          </template>
+          <n-thing :title="item.name" :description="item.description">
+            {{ item.link }}
+          </n-thing>
+        </n-list-item>
+      </n-list>
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  NButton,
+  NH1,
+  NH2,
+  NInput,
+  NInputGroup,
+  NList,
+  NListItem,
+  NThing,
+  NSpace,
+  useMessage,
+} from 'naive-ui'
+import { useRouter } from 'vue-router'
+import { deleteLink, search } from '../utils/api'
+const router = useRouter()
+let keyword = ref('')
+let loading = ref(false)
+let data = ref<[] | undefined>(undefined)
+const message = useMessage()
+async function onSearch() {
+  loading.value = true
+  data.value = (await search({ keyword: keyword.value })).data
+  loading.value = false
+  console.log(data.value)
+}
+
+async function onDelete(name: string) {
+  let data = (await deleteLink(name)).data
+  console.log(data)
+  message.success('删除成功！')
+  await onSearch()
+}
+</script>
+
+<style scoped>
+.container {
+  margin-top: 4rem;
+}
+
+.section {
+  margin-top: 4rem;
+}
+</style>
