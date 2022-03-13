@@ -61,10 +61,11 @@ import {
 } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { deleteLink, search } from '../utils/api'
+import { RedirectLink } from '../../models'
 const router = useRouter()
 let keyword = ref('')
 let loading = ref(false)
-let data = ref<[] | undefined>(undefined)
+let data = ref<RedirectLink[] | undefined>(undefined)
 const message = useMessage()
 async function onSearch() {
   loading.value = true

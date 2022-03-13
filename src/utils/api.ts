@@ -1,5 +1,5 @@
 import Axios from 'axios'
-
+import { RedirectLink } from '../../models'
 export const client = Axios.create({})
 
 export function addNewLink({
@@ -25,18 +25,18 @@ export function addNewLink({
 }
 
 export function search({ keyword }: { keyword: string }) {
-  return client.post<[]>('/api/search', {
+  return client.post<RedirectLink[]>('/api/search', {
     keyword,
   })
 }
 
 export function getLink(name: string) {
-  return client.post<[]>('/api/getLink', {
+  return client.post<RedirectLink>('/api/getLink', {
     name,
   })
 }
 export function deleteLink(name: string) {
-  return client.post<[]>('/api/deleteLink', {
+  return client.post('/api/deleteLink', {
     name,
   })
 }

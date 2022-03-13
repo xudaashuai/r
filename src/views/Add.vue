@@ -89,8 +89,8 @@ async function submit() {
   console.log(res.data)
 }
 onMounted(async () => {
-  if (edit) {
-    const data = (await getLink(route.query.name)).data
+  if (edit && route.query.name) {
+    const data = (await getLink(route.query.name as string)).data
     name.value = data.name
     link.value = data.link
     description.value = data.description
