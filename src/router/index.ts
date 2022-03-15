@@ -1,24 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-//Routes
 import Home from '../views/Home.vue'
 import Add from '../views/Add.vue'
-import NotFound from '../views/NotFound.vue'
 
 const routes = [
   {
     path: '/',
-    meta: { title: 'Home' },
+    meta: { title: '首页' },
     component: Home,
   },
   {
     path: '/add',
     meta: { title: '添加' },
     component: Add,
-  },
-  {
-    path: '/:page',
-    component: NotFound,
   },
 ]
 

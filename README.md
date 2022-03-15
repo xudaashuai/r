@@ -1,44 +1,24 @@
-# Vue 3 + Typescript + Tailwind + Vite
+# Redirector
 
-This template should help get you started developing with Vue 3, Typescript and Tailwind in Vite. 
-It is worth mentioning that this model was made using the [vite-vue3-tailwind-starter](https://github.com/web2033/vite-vue3-tailwind-starter) model as a base.
+一个简简单单的短链小工具，支持配置短链跳转，期待的使用场景是公司内部私有部署，用于定义跨团队分享的短链接。（想法抄袭自 Airbnb 内部的短链工具 air.bb）
 
-## This starter template includes:
+例如前端部门可以创建 `redirector.com/frontend` 的短链跳转到前端部门的文档主页。
 
-- [Vite](https://vitejs.dev/guide/)
-- [Vue 3](https://staging.vuejs.org/guide/introduction.html)
-- [Vue Router v4](https://github.com/vuejs/vue-router-next)
-- [Tailwind CSS v3](https://tailwindcss.com/docs/configuration)
-- [Headless UI](https://headlessui.dev/vue/menu) - unstyled, fully accessible UI components, designed to integrate beautifully with Tailwind CSS
-- [Heroicons](https://github.com/tailwindlabs/heroicons#vue) - beautiful hand-crafted SVG icons, by the makers of Tailwind CSS
-- [Typescript](https://www.typescriptlang.org/)
-- [Eslint](https://eslint.org/docs/user-guide/getting-started)
-- [Prettier](https://prettier.io/docs/en/install.html)
-- [prettier-plugin-tailwindcss](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier) - Automatic Class Sorting with Prettier
-
-First-party plugins needed for Tailwind UI:
-
-- [tailwindcss/forms](https://github.com/tailwindlabs/tailwindcss-forms)
-- [tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin)
-- [tailwindcss/line-clamp](https://github.com/tailwindlabs/tailwindcss-line-clamp)
-- [tailwindcss/aspect-ratio](https://github.com/tailwindlabs/tailwindcss-aspect-ratio)
-
-## Recommended
-
-- [VSCode](https://code.visualstudio.com/)
-- [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
-
-The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Getting Started
+## 使用方法
 
 ```
-npx degit Edsonalencar/Vitalis-template my-project
-cd my-project
+DOMAIN=部署的网站域名 UI_PREFIX=编辑短链的子域名 docker-compose up -d
 ```
 
-```
-npm i         | yarn
-npm run dev   | yarn dev
-npm run build | yarn build
-```
+例如，我将 Redirector 部署在 我设置 `DOMAIN=xudashuai.xyz UI_PREFIX=r`
+
+- 那我就可以打开 `r.xudashuai.xyz` 看到添加和编辑短链的页面。
+- 访问 `xudashuai.xyz/你定义的短链名称` 来使用短链跳转
+
+## TODO
+
+目前还在 MVP 开发中
+
+- [ ] 短链创建/编辑/删除/搜索
+- [ ] 短链模板功能
+- [ ] 短链数据统计

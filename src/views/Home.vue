@@ -61,7 +61,7 @@ import {
 } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { deleteLink, search } from '../utils/api'
-import { RedirectLink } from '../../models'
+import { RedirectLink } from '../../common/model'
 const router = useRouter()
 let keyword = ref('')
 let loading = ref(false)

@@ -8,6 +8,6 @@
   </main>
 </template>
 <script setup lang="ts">
-import { NMessageProvider, NConfigProvider } from 'naive-ui'
+import { NMessageProvider, NConfigProvider } from  'naive-ui'
 </script>
 <style></style>

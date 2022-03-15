@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { RedirectLink } from '../../models'
+import { RedirectLink } from '../../common/model'
 export const client = Axios.create({})
 
 export function addNewLink({

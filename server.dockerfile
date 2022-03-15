@@ -4,6 +4,7 @@ COPY package.json ./
 
 RUN yarn
 COPY ./server ./server
+COPY ./common ./common
 
-CMD ["node", "./server/index.js"]
+CMD ["yarn", "serve"]
 

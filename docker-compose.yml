@@ -11,14 +11,23 @@ services:
     depends_on:
       - db
     environment:
-      - DB_URL=mongodb://db:27017
+      - DB_URL=${DB_URL}
+      - DOMAIN=${DOMAIN}
+      - UI_PREFIX=${UI_PREFIX}
   frontend:
     build:
       context: ./
       dockerfile: frontend.dockerfile
     ports:
       - 80:80
+    volumes:
+      - './templates:/etc/nginx/templates'
+    environment:
+      - NGINX_ENVSUBST_TEMPLATE_SUFFIX=.conf
+      - DOMAIN=${DOMAIN}
+      - UI_PREFIX=${UI_PREFIX}
     depends_on:
       - server
+    command: [nginx-debug, '-g', 'daemon off;']
 volumes:
   rmongo:
