@@ -1,100 +1,86 @@
 <template>
-  <div class="container">
-    <h1>添加新的链接</h1>
-    <div class="form-group">
-      <label for="name" class="required">短链</label>
-      <div v-if="nameErrorMsg" class="invalid-feedback">
-        {{ nameErrorMsg }}
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">{{ REDIRECTOR_DOMAIN }}</span>
-        </div>
-        <input id="name" v-model="name" type="text" class="form-control" />
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="link" class="required">重定向链接</label>
-      <div v-if="linkErrorMsg" class="invalid-feedback">
-        {{ linkErrorMsg }}
-      </div>
-      <div class="input-group">
-        <input id="link" v-model="link" type="text" class="form-control" />
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="">短链描述</label>
-      <textarea
-        id="description"
-        v-model="description"
-        class="form-control"
-        placeholder=""
-      ></textarea>
-    </div>
-
-    <!-- Submit button -->
-    <n-button
-      :disabled="(!!nameErrorMsg && !!linkErrorMsg) || loading"
-      block
-      type="info"
-      size="large"
-      @click="submit"
+  <div v-if="link" class="container">
+    <h1>修改短链</h1>
+    <!-- config is passed down to descendant inputs: -->
+    <FormKit
+      v-model="link"
+      :value="link"
+      type="form"
+      :config="{ validationVisibility: 'submit' }"
+      @submit="submit"
     >
-      {{ edit ? '保存' : '创建！' }}
-    </n-button>
+      <form-kit
+        name="name"
+        type="text"
+        label="短链"
+        :sections-schema="{
+          prefix: buildPrefix(`${REDIRECTOR_DOMAIN}/`),
+        }"
+        disabled
+      >
+      </form-kit>
+      <form-kit
+        name="link"
+        label="重定向链接"
+        validation="required|length:2,100"
+      />
+      <form-kit name="description" type="text" label="短链描述" />
+    </FormKit>
   </div>
 </template>
 <script setup lang="ts">
 import { REDIRECTOR_DOMAIN } from '../../common/constant'
-import { ref, computed, onMounted } from 'vue'
-import { addNewLink, getLink } from '../utils/api'
-import { NButton, useMessage } from 'naive-ui'
-import { useRoute } from 'vue-router'
-const name = ref('')
-const link = ref('')
-const description = ref('')
+import { ref, onMounted } from 'vue'
+import { updateLink, getLink } from '../utils/api'
+import { buildPrefix } from '../utils/formkit'
+import { useMessage } from 'naive-ui'
+import { useRoute, useRouter } from 'vue-router'
+import { RedirectLink } from '../../common/model'
+const link = ref<RedirectLink | undefined>()
 const loading = ref(false)
 const route = useRoute()
-
-const edit = !!route.query.edit
-const nameErrorMsg = computed(() => {
-  return /^[a-zA-Z0-9\-_]{1,100}$/g.test(name.value)
-    ? ''
-    : '短链只能包含大小写字母数字以及-和_符号，并且长度不能大于100'
-})
-
-const linkErrorMsg = computed(() => {
-  return /^.{1,100}$/g.test(link.value) ? '' : '链接不合法'
-})
+const router = useRouter()
 
 const message = useMessage()
 async function submit() {
-  if (nameErrorMsg.value) {
-    return
-  }
-  loading.value = true
-  const res = await addNewLink({
-    name: name.value,
-    link: link.value,
-    description: description.value,
-    edit: !!route.query.edit,
-  })
+  const res = await updateLink(link.value!)
   if (res.data.error) {
     message.error(res.data.error)
   } else {
-    message.success(edit ? '修改成功' : '创建成功')
+    message.success('修改成功')
   }
   loading.value = false
   console.log(res.data)
 }
 onMounted(async () => {
-  if (edit && route.query.name) {
-    const data = (await getLink(route.query.name as string)).data
-    name.value = data.name
-    link.value = data.link
-    description.value = data.description
-    console.log(data)
+  if (route.query.name) {
+    const data = (await getLink({ name: route.query.name as string })).data
+    if (data.error) {
+      message.warning(`${route.query.name} 链接不存在，跳转至创建页面`)
+      router.replace({
+        path: '/add',
+        query: { name: route.query.name },
+      })
+    } else {
+      link.value = data.link
+    }
+  } else {
+    router.replace({
+      path: '/add',
+    })
   }
 })
 </script>
+
+<style>
+.container .formkit-wrapper {
+  max-width: 100%;
+}
+
+.container .formkit-label {
+  font-size: 1.5rem;
+}
+[data-type='submit'] .formkit-input {
+  width: 100% !important;
+}
+</style>

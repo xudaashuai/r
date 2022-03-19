@@ -15,4 +15,7 @@ export default defineConfig({
       // 正则
     },
   },
+  define: {
+    'process.env': {},
+  },
 })

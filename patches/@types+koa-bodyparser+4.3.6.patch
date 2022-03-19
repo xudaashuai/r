@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/koa-bodyparser/index.d.ts b/node_modules/@types/koa-bodyparser/index.d.ts
+index f0210b8..30e9602 100755
+--- a/node_modules/@types/koa-bodyparser/index.d.ts
++++ b/node_modules/@types/koa-bodyparser/index.d.ts
+@@ -21,7 +21,7 @@ import * as Koa from "koa";
+ 
+ declare module "koa" {
+     interface Request {
+-        body?: any;
++        body: any;
+         rawBody: string;
+     }
+ }

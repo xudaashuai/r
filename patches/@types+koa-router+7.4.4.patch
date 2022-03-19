@@ -1,0 +1,21 @@
+diff --git a/node_modules/@types/koa-router/index.d.ts b/node_modules/@types/koa-router/index.d.ts
+index 0b10ad9..7ba171a 100755
+--- a/node_modules/@types/koa-router/index.d.ts
++++ b/node_modules/@types/koa-router/index.d.ts
+@@ -47,11 +47,15 @@ declare namespace Router {
+         /**
+          * url params
+          */
+-        params: Record<string, string>;
++        params: any
+         /**
+          * the router instance
+          */
+         router: Router<StateT, CustomT>;
++
++        request: {
++            body: any
++        }
+         /**
+          * Matched route
+          */

@@ -6,12 +6,10 @@
       <div v-if="nameErrorMsg" class="invalid-feedback">
         {{ nameErrorMsg }}
       </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">{{ REDIRECTOR_DOMAIN }}</span>
-        </div>
-        <input id="name" v-model="name" type="text" class="form-control" />
-      </div>
+      <n-input-group>
+        <n-input-group-label>{{ REDIRECTOR_DOMAIN + '/' }}</n-input-group-label>
+        <n-input v-model:value="name" type="text" />
+      </n-input-group>
     </div>
     <div class="form-group">
       <label for="link" class="required">重定向链接</label>
@@ -41,23 +39,26 @@
       size="large"
       @click="submit"
     >
-      {{ edit ? '保存' : '创建！' }}
+      创建！
     </n-button>
   </div>
 </template>
 <script setup lang="ts">
 import { REDIRECTOR_DOMAIN } from '../../common/constant'
-import { ref, computed, onMounted } from 'vue'
-import { addNewLink, getLink } from '../utils/api'
-import { NButton, useMessage } from 'naive-ui'
-import { useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
+import { addLink } from '../utils/api'
+import {
+  NButton,
+  NInput,
+  NInputGroup,
+  NInputGroupLabel,
+  useMessage,
+} from 'naive-ui'
 const name = ref('')
 const link = ref('')
 const description = ref('')
 const loading = ref(false)
-const route = useRoute()
 
-const edit = !!route.query.edit
 const nameErrorMsg = computed(() => {
   return /^[a-zA-Z0-9\-_]{1,100}$/g.test(name.value)
     ? ''
@@ -74,27 +75,17 @@ async function submit() {
     return
   }
   loading.value = true
-  const res = await addNewLink({
+  const res = await addLink({
     name: name.value,
     link: link.value,
     description: description.value,
-    edit: !!route.query.edit,
   })
   if (res.data.error) {
     message.error(res.data.error)
   } else {
-    message.success(edit ? '修改成功' : '创建成功')
+    message.success('创建成功')
   }
   loading.value = false
   console.log(res.data)
 }
-onMounted(async () => {
-  if (edit && route.query.name) {
-    const data = (await getLink(route.query.name as string)).data
-    name.value = data.name
-    link.value = data.link
-    description.value = data.description
-    console.log(data)
-  }
-})
 </script>

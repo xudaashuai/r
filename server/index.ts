@@ -3,31 +3,29 @@ import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import Logger from 'koa-logger'
 import json from 'koa-json'
+import koaqs from 'koa-qs'
 import { MongoClient } from 'mongodb'
-import { REDIRECTOR_DOMAIN, UI_DOMAIN } from '../common/constant'
+import { RedirectLink } from '../common/model'
+import { RedirectorContext } from './types'
+import { redirector } from './redirector'
+import addLink from './router/addLink'
+import search from './router/search'
+import getLink from './router/getLink'
+import deleteLink from './router/deleteLink'
+import updateLink from './router/updateLink'
 
 const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017'
 
 async function start() {
-  const db = (await MongoClient.connect(DB_URL)).db('r').collection('link')
+  const db = (await MongoClient.connect(DB_URL))
+    .db('r')
+    .collection<RedirectLink>('link')
   console.log('数据库已连接')
 
-  const app = new Koa()
-  app.use(new Logger())
-  app.use(async (ctx) => {
-    const name = ctx.request.path.substring(1)
-
-    const res = await db.findOne({
-      _id: name,
-    })
-    console.log(res, name)
-    ctx.status = 302
-    if (res) {
-      ctx.redirect(res.link)
-    } else {
-      ctx.redirect(`http://${UI_DOMAIN}/add?name=${name}`)
-    }
-  })
+  const app = new Koa<Koa.DefaultState, RedirectorContext>()
+  app.context.db = db
+  app.use(Logger())
+  app.use(redirector())
 
   app.listen(8080, () => {
     console.log('backend at port 8080')
@@ -35,96 +33,40 @@ async function start() {
 }
 
 async function start2() {
-  const db = (await MongoClient.connect(DB_URL)).db('r').collection('link')
-  console.log('数据库已创建!')
+  const db = (await MongoClient.connect(DB_URL))
+    .db('r')
+    .collection<RedirectLink>('link')
+  console.log('数据库已连接!')
 
-  const app = new Koa()
+  const app = new Koa<Koa.DefaultState, RedirectorContext>()
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  koaqs(app, 'extended')
+  app.context.db = db
   app.use(bodyParser())
-  app.use(new Logger())
+  app.use(Logger())
   app.use(json())
-  const router = new Router()
-  let res
-
-  router.post('/addLink', async (ctx) => {
-    console.log(ctx.request.body)
-    if (
-      await db.findOne({
-        _id: ctx.request.body.name,
-      })
-    ) {
-      if (ctx.request.body.edit) {
-        res = await db.updateOne(
-          {
-            _id: ctx.request.body.name,
-          },
-          {
-            $set: {
-              ...ctx.request.body,
-            },
-          }
-        )
-      } else {
-        res = {
-          acknowledged: false,
-          error: '已存在',
-        }
-        return
-      }
-    } else {
-      res = await db.insertOne({
-        ...ctx.request.body,
-        _id: ctx.request.body.name,
-      })
-    }
-    ctx.body = res
-  })
-  router.post('/search', async (ctx) => {
-    console.log(ctx.request.body)
-    const cur = db.find(
-      {
-        _id: {
-          $regex: ctx.request.body.keyword,
-        },
-      },
-      {
-        limit: 10,
-      }
+  app.use(async (ctx, next) => {
+    console.log(
+      `[request start] path: ${ctx.path} method: ${
+        ctx.method
+      } query: ${JSON.stringify(ctx.query)} body: ${ctx.request.rawBody}`
     )
-
-    const res = []
-
-    await cur.forEach((item) => {
-      res.push(item)
-    })
-    console.log(res)
-    ctx.body = res
+    await next()
+    console.log(
+      `[request end] path: ${ctx.path} method: ${ctx.method} status: ${
+        ctx.status
+      } response: ${JSON.stringify(ctx.response.body)}`
+    )
   })
 
-  router.post('/getLink', async (ctx) => {
-    console.log(ctx.request.body)
+  const router = new Router<Koa.DefaultState, RedirectorContext>()
+  router.get('/get_link', getLink)
+  router.post('/add_link', addLink)
+  router.post('/delete_link', deleteLink)
+  router.post('/update_link', updateLink)
 
-    const res = await db.findOne({
-      _id: {
-        $eq: ctx.request.body.name,
-      },
-    })
-
-    console.log(res)
-    ctx.body = res
-  })
-
-  router.post('/deleteLink', async (ctx) => {
-    console.log(ctx.request.body)
-
-    const res = await db.deleteOne({
-      _id: {
-        $eq: ctx.request.body.name,
-      },
-    })
-
-    console.log(res)
-    ctx.body = res
-  })
+  router.get('/search', search)
 
   app.use(router.routes()).use(router.allowedMethods())
 

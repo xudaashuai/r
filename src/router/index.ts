@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '../views/Home.vue'
 import Add from '../views/Add.vue'
+import Update from '../views/Update.vue'
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     path: '/add',
     meta: { title: '添加' },
     component: Add,
+  },
+  {
+    path: '/update',
+    meta: { title: '编辑' },
+    component: Update,
   },
 ]
 

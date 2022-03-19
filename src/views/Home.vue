@@ -29,7 +29,7 @@
         <n-list-item v-for="item in data" :key="item.name">
           <template #suffix>
             <n-space>
-              <n-button @click="router.push(`/add?edit=true&name=${item.name}`)"
+              <n-button @click="router.push(`/update?name=${item.name}`)"
                 >编辑</n-button
               >
               <n-button type="error" @click="onDelete(item.name)"
@@ -69,13 +69,13 @@ let data = ref<RedirectLink[] | undefined>(undefined)
 const message = useMessage()
 async function onSearch() {
   loading.value = true
-  data.value = (await search({ keyword: keyword.value })).data
+  data.value = (await search({ name: keyword.value })).data.links
   loading.value = false
   console.log(data.value)
 }
 
 async function onDelete(name: string) {
-  let data = (await deleteLink(name)).data
+  let data = (await deleteLink({ name })).data
   console.log(data)
   message.success('删除成功！')
   await onSearch()

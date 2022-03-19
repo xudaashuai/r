@@ -1,42 +1,36 @@
 import Axios from 'axios'
-import { RedirectLink } from '../../common/model'
+import {
+  AddLinkRequest,
+  AddLinkResponse,
+  DeleteLinkRequest,
+  DeleteLinkResponse,
+  GetLinkRequest,
+  GetLinkResponse,
+  SearchLinkRequest,
+  SearchLinkResponse,
+  UpdateLinkRequest,
+  UpdateLinkResponse,
+} from '../../common/apiTypes'
 export const client = Axios.create({})
 
-export function addNewLink({
-  name,
-  description,
-  link,
-  edit,
-}: {
-  name: string
-  description: string
-  link: string
-  edit: boolean
-}) {
-  return client.post<{
-    error?: string
-    acknowledged: boolean
-  }>('/api/addLink', {
-    name,
-    description,
-    link,
-    edit,
+export function addLink(req: AddLinkRequest) {
+  return client.post<AddLinkResponse>('/api/add_link', req)
+}
+
+export function updateLink(req: UpdateLinkRequest) {
+  return client.post<UpdateLinkResponse>('/api/update_link', req)
+}
+
+export function search(params: SearchLinkRequest) {
+  return client.get<SearchLinkResponse>('/api/search', {
+    params,
   })
 }
 
-export function search({ keyword }: { keyword: string }) {
-  return client.post<RedirectLink[]>('/api/search', {
-    keyword,
-  })
+export function getLink(params: GetLinkRequest) {
+  return client.get<GetLinkResponse>('/api/get_link', { params })
 }
 
-export function getLink(name: string) {
-  return client.post<RedirectLink>('/api/getLink', {
-    name,
-  })
-}
-export function deleteLink(name: string) {
-  return client.post('/api/deleteLink', {
-    name,
-  })
+export function deleteLink(data: DeleteLinkRequest) {
+  return client.post<DeleteLinkResponse>('/api/delete_link', data)
 }

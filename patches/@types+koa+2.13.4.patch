@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/koa/index.d.ts b/node_modules/@types/koa/index.d.ts
+index 2e085b1..320acb2 100755
+--- a/node_modules/@types/koa/index.d.ts
++++ b/node_modules/@types/koa/index.d.ts
+@@ -77,7 +77,7 @@ declare interface ContextDelegatedRequest {
+      * Get parsed query-string.
+      * Set query-string as an object.
+      */
+-    query: ParsedUrlQuery;
++    query: any;
+ 
+     /**
+      * Get/Set query string.

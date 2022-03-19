@@ -14,14 +14,18 @@
     "baseUrl": ".",
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "types": ["vite/client", "node"],
-    "plugins": [{ "name": "@vuedx/typescript-plugin-vue" }]
+    "plugins": [{ "name": "@vuedx/typescript-plugin-vue" }],
+    "typeRoots": ["@types", "./node_modules/@types"]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "common/constant.ts"
+    "common/**/*.ts",
+    "common/**/*.d.ts",
+    "common/constant.ts",
+    "server/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
