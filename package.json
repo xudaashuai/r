@@ -5,7 +5,7 @@
     "start": "concurrently \"vite\" \"nodemon ./server/index.ts\"",
     "serve": "ts-node  --transpile-only ./server/index.ts",
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "node --max_old_space_size=16384 ./node_modules/vue-tsc/bin/vue-tsc.js --noEmit && node --max_old_space_size=1024 ./node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore .",
     "postinstall": "patch-package"
