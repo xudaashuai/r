@@ -13,6 +13,7 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./vite.config.ts ./vite.config.ts
 COPY ./index.html ./index.html
 COPY ./src ./src
+COPY ./patches ./patches
 COPY ./common ./common
 COPY ./.nvmrc ./.nvmrc
 COPY ./.yarnrc ./.yarnrc
